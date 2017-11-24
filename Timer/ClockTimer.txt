@@ -1,0 +1,73 @@
+import java.util.Timer;
+import java.util.TimerTask;
+
+interface CallBack1 {
+	void onSecondsUpdate(ClockTimer remainingTime); 
+	
+    	}
+interface CallBack2 {
+	void onTimerEnd() ;
+	
+    	}
+
+    
+public class ClockTimer {
+	
+      private int hours, minutes,  seconds,  miliSeconds;
+      private long current_time;
+      ClockTimer(int hours, int minutes, int seconds, int miliSeconds)
+      {
+    	  this.hours=hours;
+    	  this.minutes=minutes;
+    	  this.seconds=seconds;
+    	  this.miliSeconds=miliSeconds;
+    	  current_time=hours*60*60*1000+minutes*60*1000+seconds*1000+miliSeconds;
+      }
+      void Start()
+      {
+    	  Runnable r = new Runnable() {
+  			public void run() {
+  				Timer t = new Timer();
+  				t.schedule(new TimerTask() {
+  				    @Override
+  				    public void run() {
+  				    	
+  				       CallBack1 call1=new CallBack1() {
+					
+						
+						@Override
+						public void onSecondsUpdate(ClockTimer remainingTime) {
+							// TODO Auto-generated method stub
+						System.out.println("function called every second | Time left(in milisec) - "+current_time);	
+						current_time-=1000;
+						}
+						
+
+					
+					};
+					call1.onSecondsUpdate(null);
+					if(current_time<=0)
+					{
+						CallBack2 call2=new CallBack2() {
+							
+							@Override
+							public void onTimerEnd() {
+								System.out.println("onTimerend() is called as time is over");
+								t.cancel();
+								
+							}
+						};
+						call2.onTimerEnd();
+					}
+  				    }
+  				    
+  				}, 0, 1000);
+  				
+  			}
+  		};
+   
+  		Thread t = new Thread(r);
+  		
+  		t.start(); 
+      }
+}
